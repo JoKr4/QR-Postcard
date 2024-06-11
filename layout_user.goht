@@ -1,4 +1,4 @@
-@goht MainContent() {
+@goht UserContent() {
 %div{class: "container", style: "max-width: 540px;"}
   %div{class: "row"}
     %img{src: "/static/9027379_placeholder_icon.png", class: "img-fluid rounded-start", alt: "..."}

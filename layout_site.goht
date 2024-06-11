@@ -1,4 +1,4 @@
-@goht SiteLayout() {
+@goht SiteLayout(admin bool) {
 !!! 5
   %head
     %title QR Postcard
@@ -13,5 +13,8 @@
       %p Send your digital words on paper postcards with QR code!
     %div{class: "container mt-3"}
       %div{class: "col"}
-      = @render MainContent()
+      - if admin
+        = @render AdminContent()
+      - else
+        = @render UserContent()
 }

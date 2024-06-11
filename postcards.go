@@ -1,0 +1,35 @@
+package main
+
+import (
+	"encoding/json"
+	"log"
+	"os"
+)
+
+type postcard struct {
+	UUID string `json:"uuid"`
+	//Created     time.Time `json:"created"`
+	Textmessage string `json:"textmessage"`
+	Sent        bool   `json:"sent"`
+}
+
+type postcards struct {
+	Postcards []postcard `json:"postcards"`
+}
+
+var postcardz postcards
+var postcardzFile string
+
+func readPostcards() error {
+	data, err := os.ReadFile(postcardzFile)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+	err = json.Unmarshal(data, &postcardz)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}

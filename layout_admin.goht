@@ -1,0 +1,22 @@
+import "strconv"
+@goht AdminContent() {
+%div{class: "container", style: "max-width: 540px;"}
+  %div{class: "row"}
+    %div{class: "col"}
+      %button{style: "height: 60px;"} Show selected
+    %div{class: "col"}
+      %button{style: "height: 60px;"} Create new
+  %div{class: "row"}
+    %table{class: "table"}
+      %thead
+        %tr
+          %th{scope: "col"} #
+          %th{scope: "col"} UUID
+          %th{scope: "col"} Created
+      %tbody
+        - for i, r := range postcardz.Postcards
+          %tr
+            %th{scope: "row"}=strconv.Itoa(i+1)
+            %td=r.UUID
+            %td somtime
+}

@@ -3,24 +3,44 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
+
+	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 func main() {
-	fs := http.FileServer(http.Dir("./resources"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	postcardzFile = filepath.Join(filepath.Dir(os.Args[0]), "postcards.json")
 
-	http.HandleFunc("/", serveTemplate)
-	http.HandleFunc("/clicked", clicked)
-
-	log.Print("Listening on :3000...")
-	err := http.ListenAndServe("192.168.178.36:3000", nil)
+	err := readPostcards()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	r := mux.NewRouter()
+	r.HandleFunc("/", serveTemplateAdmin).Methods("GET")
+	r.PathPrefix("/static").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./resources"))))
+	// r.HandleFunc("/api/postcards", getPostcards).Methods("GET")
+	r.HandleFunc("/api/postcard/{postcarduuid}", serveTemplateCardForUser).Methods("GET")
+	// r.HandleFunc("/api/postcard/{postcarduuid}", updatePostcard).Methods("PUT")
+	// r.HandleFunc("/api/postcard", createPostcard).Methods("POST")
+
+	c := cors.New(cors.Options{
+		AllowedMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost},
+	})
+
+	handler := c.Handler(r)
+
+	log.Fatal(http.ListenAndServe("192.168.178.36:8081", handler))
 }
 
-func serveTemplate(w http.ResponseWriter, r *http.Request) {
-	_ = SiteLayout().Render(r.Context(), w)
+func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
+	_ = SiteLayout(false).Render(r.Context(), w)
+}
+
+func serveTemplateAdmin(w http.ResponseWriter, r *http.Request) {
+	_ = SiteLayout(true).Render(r.Context(), w)
 }
 
 func clicked(w http.ResponseWriter, r *http.Request) {
