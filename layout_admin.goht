@@ -1,22 +1,46 @@
-import "strconv"
+
 @goht AdminContent() {
-%div{class: "container", style: "max-width: 540px;"}
-  %div{class: "row"}
-    %div{class: "col"}
-      %button{style: "height: 60px;"} Show selected
-    %div{class: "col"}
-      %button{style: "height: 60px;"} Create new
+%div{class: "container", style: "max-width: 540px;", id: "overlayable"}
   %div{class: "row"}
     %table{class: "table"}
       %thead
         %tr
-          %th{scope: "col"} #
-          %th{scope: "col"} UUID
           %th{scope: "col"} Created
+          %th{scope: "col"} UUID
+          %th{scope: "col"} HasContent
+          %th{scope: "col"} Actions
       %tbody
-        - for i, r := range postcardz.Postcards
+        %tr
+          %td
+          %td
+          %td
+          %td
+            %div{class: "d-flex justify-content-center"}
+              %button{
+                style: "w-100",
+                class: "btn btn-secondary",
+                hx-get: "/postcard/new",
+                hx-trigger: "click",
+                hx-swap: "none"
+              } New
+        - for _, r := range postcardz.Postcards
           %tr
-            %th{scope: "row"}=strconv.Itoa(i+1)
-            %td=r.UUID
             %td somtime
+            %td=r.UUID
+            %td=%v r.HasContent()
+            %td
+              %div{class: "d-flex justify-content-center"}
+                %button{
+                  class: "btn btn-info me-3",
+                  hx-get: #{"/api/postcard/"+r.UUID+"/code"},
+                  hx-trigger: "click",
+                  hx-swap: "outerHTML",
+                  hx-target: "#overlayable"
+                } Code
+                %button{
+                  class: "btn btn-info",
+                  hx-get: #{"/api/postcard/"+r.UUID+"/print"},
+                  hx-trigger: "click",
+                  hx-swap: "none"
+                } Print
 }

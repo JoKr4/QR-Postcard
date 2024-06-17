@@ -22,7 +22,8 @@ func main() {
 	r.HandleFunc("/", serveTemplateAdmin).Methods("GET")
 	r.PathPrefix("/static").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./resources"))))
 	// r.HandleFunc("/api/postcards", getPostcards).Methods("GET")
-	r.HandleFunc("/api/postcard/{postcarduuid}", serveTemplateCardForUser).Methods("GET")
+	// r.HandleFunc("/api/postcard/{postcarduuid}", serveTemplateCardForUser).Methods("GET")
+	r.HandleFunc("/api/postcard/{postcarduuid}/code", codeForExistingPostcard).Methods("GET")
 	// r.HandleFunc("/api/postcard/{postcarduuid}", updatePostcard).Methods("PUT")
 	// r.HandleFunc("/api/postcard", createPostcard).Methods("POST")
 
@@ -32,7 +33,13 @@ func main() {
 
 	handler := c.Handler(r)
 
-	log.Fatal(http.ListenAndServe("192.168.178.36:8081", handler))
+	log.Fatal(http.ListenAndServe(":8081", handler))
+}
+
+func codeForExistingPostcard(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	log.Println("codeForExistingPostcard with uuid:", vars["postcarduuid"])
+	_ = QrCodeOverlay().Render(r.Context(), w)
 }
 
 func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {

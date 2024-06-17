@@ -10,7 +10,6 @@ type postcard struct {
 	UUID string `json:"uuid"`
 	//Created     time.Time `json:"created"`
 	Textmessage string `json:"textmessage"`
-	Sent        bool   `json:"sent"`
 }
 
 type postcards struct {
@@ -32,4 +31,8 @@ func readPostcards() error {
 		return err
 	}
 	return nil
+}
+
+func (pc postcard) HasContent() bool {
+	return pc.Textmessage != ""
 }
