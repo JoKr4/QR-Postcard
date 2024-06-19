@@ -19,7 +19,7 @@
               %button{
                 style: "w-100",
                 class: "btn btn-secondary",
-                hx-get: "/postcard/new",
+                hx-get: "/api/postcard/new",
                 hx-trigger: "click",
                 hx-swap: "none"
               } New

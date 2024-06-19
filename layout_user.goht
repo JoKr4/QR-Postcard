@@ -7,5 +7,5 @@
   %div{class: "row"}
     %textarea{class: "form-control", rows: "4", name: "usertext", id:"textarea1"}
   %div{class: "row mt-2"}
-    %button{style: "height: 60px;", hx-post: "/clicked", hx-swap: "none", hx-include: "#textarea1"} Save
+    %button{style: "height: 60px;", hx-post: "/api/postcard/update", hx-swap: "none", hx-include: "#textarea1"} Save
 }

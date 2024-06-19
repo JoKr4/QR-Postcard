@@ -33,6 +33,18 @@ func readPostcards() error {
 	return nil
 }
 
+func safePostcards() error {
+	bytez, err := json.MarshalIndent(postcardz, "", "    ")
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(postcardzFile, bytez, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (pc postcard) HasContent() bool {
 	return pc.Textmessage != ""
 }
