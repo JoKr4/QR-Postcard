@@ -73,12 +73,23 @@ func (hqw httpQrWriter) Close() error {
 func newPostcard(w http.ResponseWriter, r *http.Request) {
 	qrc, err := qrcode.New("https://github.com/yeqown/go-qrcode")
 	if err != nil {
-		fmt.Printf("could not generate QRCode: %v", err)
+		what := fmt.Sprintf("could not generate QRCode: %v", err)
+		log.Println(what)
+		http.Error(w, what, http.StatusInternalServerError)
 		return
 	}
 	special := httpQrWriter{writer: w}
-	writer2 := standard.NewWithWriter(special, nil)
-	qrc.Save(writer2)
+	options := []standard.ImageOption{
+		standard.WithBuiltinImageEncoder(standard.PNG_FORMAT),
+	}
+	writer2 := standard.NewWithWriter(special, options...)
+	err = qrc.Save(writer2)
+	if err != nil {
+		what := fmt.Sprintf("could not save QRCode: %v", err)
+		log.Println(what)
+		http.Error(w, what, http.StatusInternalServerError)
+		return
+	}
 }
 
 func updatePostcard(w http.ResponseWriter, r *http.Request) {
