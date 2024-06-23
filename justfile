@@ -1,5 +1,11 @@
 default:
   just --list
 
-run:
-  goht generate && go build && ./QR-Postcard.exe
+build:
+  goht generate && go build
+
+run_windows: build
+  ./QR-Postcard.exe
+
+run_linux: build
+  ./QR-Postcard
