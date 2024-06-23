@@ -1,8 +1,8 @@
 
 @goht AdminContent() {
-%div{class: "container", style: "max-width: 540px;", id: "overlayable"}
+%div{class: "container", style: "max-width: 540px;"}
   %div{class: "row"}
-    %table{class: "table"}
+    %table{class: "table", id: "overlayable"}
       %thead
         %tr
           %th{scope: "col"} Created
