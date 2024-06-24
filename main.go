@@ -1,20 +1,22 @@
 package main
 
 import (
+	"bytes"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-
-	"net/url"
-
 	"github.com/yeqown/go-qrcode/v2"
 	"github.com/yeqown/go-qrcode/writer/standard"
+
+	"net/url"
 )
 
 func main() {
@@ -46,39 +48,18 @@ func main() {
 
 func codeForExistingPostcard(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	log.Println("codeForExistingPostcard with uuid:", vars["postcarduuid"])
-	_ = QrCodeOverlay().Render(r.Context(), w)
-}
+	id := vars["postcarduuid"]
+	log.Println("codeForExistingPostcard with id:", id)
 
-func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
-	_ = SiteLayout(false).Render(r.Context(), w)
-}
-
-func serveTemplateAdmin(w http.ResponseWriter, r *http.Request) {
-	_ = SiteLayout(true).Render(r.Context(), w)
-}
-
-type httpQrWriter struct {
-	writer http.ResponseWriter
-}
-
-func (hqw httpQrWriter) Write(p []byte) (n int, err error) {
-	return hqw.writer.Write(p)
-}
-
-func (hqw httpQrWriter) Close() error {
-	return nil
-}
-
-func newPostcard(w http.ResponseWriter, r *http.Request) {
-	qrc, err := qrcode.New("https://github.com/yeqown/go-qrcode")
+	qrc, err := qrcode.New("http://192.168.178.36/api/postcard/" + id)
 	if err != nil {
 		what := fmt.Sprintf("could not generate QRCode: %v", err)
 		log.Println(what)
 		http.Error(w, what, http.StatusInternalServerError)
 		return
 	}
-	special := httpQrWriter{writer: w}
+	special := &bufferQrWriter{}
+	special.buff.Grow(10e3)
 	options := []standard.ImageOption{
 		standard.WithBuiltinImageEncoder(standard.PNG_FORMAT),
 	}
@@ -90,6 +71,43 @@ func newPostcard(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, what, http.StatusInternalServerError)
 		return
 	}
+	str := base64.StdEncoding.EncodeToString(special.buff.Bytes())
+	_ = QrCodeOverlay(str).Render(r.Context(), w)
+}
+
+func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
+	_ = SiteLayout(false).Render(r.Context(), w)
+}
+
+func serveTemplateAdmin(w http.ResponseWriter, r *http.Request) {
+	_ = SiteLayout(true).Render(r.Context(), w)
+}
+
+type bufferQrWriter struct {
+	buff bytes.Buffer
+}
+
+func (bqw *bufferQrWriter) Write(p []byte) (n int, err error) {
+	return bqw.buff.Write(p)
+}
+
+func (bqw *bufferQrWriter) Close() error {
+	return nil
+}
+
+func newPostcard(w http.ResponseWriter, r *http.Request) {
+	log.Println("newPostcard")
+	postcardz.Postcards = append(postcardz.Postcards,
+		postcard{Created: time.Now().Format("2006-01-02 15:04:05")},
+	)
+	err := safePostcards()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "could not safe the postcards", http.StatusInternalServerError)
+		return
+	}
+	last := len(postcardz.Postcards) - 1
+	_ = TableRow(postcardz.Postcards[last]).Render(r.Context(), w)
 }
 
 func updatePostcard(w http.ResponseWriter, r *http.Request) {
@@ -145,7 +163,7 @@ func updatePostcard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = safePostcards()
-	if !ok {
+	if err != nil {
 		log.Println(err)
 		http.Error(w, "could not safe the postcard", http.StatusInternalServerError)
 		return

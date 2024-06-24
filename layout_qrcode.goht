@@ -1,5 +1,9 @@
-@goht QrCodeOverlay() {
+@goht QrCodeOverlay(pngdata string) {
 %div
   %a{href: "/"}
-    %img{src: "/static/9027379_placeholder_icon.png"}
+    - src := "data:image/png;base64,"+pngdata
+    %img{
+      src: #{src},
+      alt: "QR Code Error"
+    }
 }

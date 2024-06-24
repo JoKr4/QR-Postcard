@@ -7,8 +7,8 @@ import (
 )
 
 type postcard struct {
-	UUID string `json:"uuid"`
-	//Created     time.Time `json:"created"`
+	UUID        string `json:"uuid"`
+	Created     string `json:"created"`
 	Textmessage string `json:"textmessage"`
 }
 

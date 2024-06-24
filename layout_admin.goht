@@ -1,3 +1,4 @@
+import "strconv"
 
 @goht AdminContent() {
 %div{class: "container", style: "max-width: 540px;"}
@@ -21,11 +22,13 @@
                 class: "btn btn-secondary",
                 hx-get: "/api/postcard/new",
                 hx-trigger: "click",
-                hx-swap: "none"
+                hx-target: "#row-0",
+                hx-swap: "beforebegin"
               } New
-        - for _, r := range postcardz.Postcards
-          %tr
-            %td somtime
+        - for i, r := range postcardz.Postcards
+          - name := "row-"+strconv.Itoa(i)
+          %tr{id: #{name}}
+            %td=r.Created
             %td=r.UUID
             %td=%v r.HasContent()
             %td

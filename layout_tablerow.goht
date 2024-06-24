@@ -1,0 +1,7 @@
+@goht TableRow(p postcard) {
+%tr
+  %td=p.Created
+  %td=p.UUID
+  %td=%v p.HasContent()
+  %td
+}
