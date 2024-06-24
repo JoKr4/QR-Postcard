@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/yeqown/go-qrcode/v2"
@@ -48,10 +49,10 @@ func main() {
 
 func codeForExistingPostcard(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["postcarduuid"]
-	log.Println("codeForExistingPostcard with id:", id)
+	uuid := vars["postcarduuid"]
+	log.Println("codeForExistingPostcard with uuid:", uuid)
 
-	qrc, err := qrcode.New("http://192.168.178.36/api/postcard/" + id)
+	qrc, err := qrcode.New("http://192.168.178.36/api/postcard/" + uuid)
 	if err != nil {
 		what := fmt.Sprintf("could not generate QRCode: %v", err)
 		log.Println(what)
@@ -98,7 +99,10 @@ func (bqw *bufferQrWriter) Close() error {
 func newPostcard(w http.ResponseWriter, r *http.Request) {
 	log.Println("newPostcard")
 	postcardz.Postcards = append(postcardz.Postcards,
-		postcard{Created: time.Now().Format("2006-01-02 15:04:05")},
+		postcard{
+			Created: time.Now().Format("2006-01-02 15:04:05"),
+			UUID:    uuid.New().String(),
+		},
 	)
 	err := safePostcards()
 	if err != nil {
