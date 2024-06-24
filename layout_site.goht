@@ -16,5 +16,5 @@
       - if admin
         = @render AdminContent()
       - else
-        = @render UserContent()
+        = @render UserContent("Hallo,")
 }

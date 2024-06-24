@@ -4,6 +4,7 @@
     - src := "data:image/png;base64,"+pngdata
     %img{
       src: #{src},
-      alt: "QR Code Error"
+      alt: "QR Code Error",
+      style: "width:100%"
     }
 }
