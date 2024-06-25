@@ -2,6 +2,7 @@
 %tr
   %td=p.Created
   %td=p.UUID
+  %td=%v p.Scanned
   %td=%v p.HasContent()
   %td
     %div{class: "d-flex justify-content-center"}

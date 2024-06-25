@@ -7,10 +7,12 @@
         %tr
           %th{scope: "col"} Created
           %th{scope: "col"} UUID
+          %th{scope: "col"} Scanned
           %th{scope: "col"} HasContent
           %th{scope: "col"} Actions
       %tbody
         %tr{id: "row-0"}
+          %td
           %td
           %td
           %td

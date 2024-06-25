@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 )
@@ -9,6 +10,7 @@ import (
 type postcard struct {
 	UUID        string `json:"uuid"`
 	Created     string `json:"created"`
+	Scanned     bool   `json:"scanned"`
 	Textmessage string `json:"textmessage"`
 }
 
@@ -47,4 +49,13 @@ func safePostcards() error {
 
 func (pc postcard) HasContent() bool {
 	return pc.Textmessage != ""
+}
+
+func getPostcardByUUID(uuid string) (*postcard, error) {
+	for i, p := range postcardz.Postcards {
+		if p.UUID == uuid {
+			return &postcardz.Postcards[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no postcard found with uuid %s", uuid)
 }

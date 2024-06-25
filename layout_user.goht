@@ -1,9 +1,9 @@
 @goht UserContent(salutation string) {
-%div{class: "container", style: "max-width: 540px;"}
+%div{class: "container", style: "max-width: 540px;", hx-trigger: "load", hx-get: "/api/postcard/loaded", hx-swap: "none"}
   %div{class: "row"}
     %img{src: "/static/9027379_placeholder_icon.png", class: "img-fluid rounded-start", alt: "..."}
   %div{class: "row mt-3"}
-    %p #{salutation}
+    %h4 #{salutation}
   %div{class: "row"}
     %textarea{class: "form-control", rows: "4", name: "usertext", id:"textarea1"}
   %div{class: "row mt-2"}

@@ -32,6 +32,7 @@ func main() {
 	r.HandleFunc("/", serveTemplateAdmin).Methods("GET")
 	r.PathPrefix("/static").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./resources"))))
 
+	r.HandleFunc("/api/postcard/loaded", loadedPostcard).Methods("GET")
 	r.HandleFunc("/api/postcard/update", updatePostcard).Methods("POST")
 	r.HandleFunc("/api/postcard/new", newPostcard).Methods("GET")
 	r.HandleFunc("/api/postcard/{postcarduuid}", serveTemplateCardForUser).Methods("GET")
@@ -114,58 +115,45 @@ func newPostcard(w http.ResponseWriter, r *http.Request) {
 	_ = TableRow(postcardz.Postcards[last]).Render(r.Context(), w)
 }
 
-func updatePostcard(w http.ResponseWriter, r *http.Request) {
+func uuidFromApiUrl(r *http.Request) (string, error) {
 
 	current, iskey := r.Header["Hx-Current-Url"]
 	if !iskey {
-		log.Println("in updatePostcard, no such key in request 'Hx-Current-Url'")
-		http.Error(w, "", http.StatusBadRequest)
-		return
+		return "", fmt.Errorf("in updatePostcard, no such key in request 'Hx-Current-Url'")
 	}
 	if len(current) != 1 {
-		log.Println("in updatePostcard, key 'Hx-Current-Url' has more than one element")
-		http.Error(w, "", http.StatusBadRequest)
-		return
+		return "", fmt.Errorf("in updatePostcard, key 'Hx-Current-Url' has more than one element")
 	}
 	parsed, _ := url.Parse(current[0])
 	pathh := parsed.Path
 	splitted := strings.Split(pathh, "/")
 	if len(splitted) != 4 {
-		log.Println("in updatePostcard, key 'Hx-Current-Url' has other than 4 path elements")
-		http.Error(w, "", http.StatusBadRequest)
-		return
+		return "", fmt.Errorf("in updatePostcard, key 'Hx-Current-Url' has other than 4 path elements")
 	}
 
-	id := splitted[3]
+	uuid := splitted[3]
 
-	err := r.ParseForm()
+	return uuid, nil
+}
+
+func loadedPostcard(w http.ResponseWriter, r *http.Request) {
+
+	uuid, err := uuidFromApiUrl(r)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	iskey = r.PostForm.Has("usertext")
-	if !iskey {
-		log.Println("in updatePostcard, key 'usertext' is missing in post form")
-		http.Error(w, "", http.StatusBadRequest)
+	pc, err := getPostcardByUUID(uuid)
+	if err != nil {
+		log.Println("error in updatePostcard: ", err.Error())
+		http.Error(w, "could not set scanned status on postcard", http.StatusInternalServerError)
 		return
 	}
-	usertext := r.PostForm.Get("usertext")
 
-	ok := false
-	for i, p := range postcardz.Postcards {
-		if p.UUID == id {
-			postcardz.Postcards[i].Textmessage = usertext
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		log.Println("in updatePostcard, the id of postcard to update was not found")
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
+	pc.Scanned = true
+
 	err = safePostcards()
 	if err != nil {
 		log.Println(err)
@@ -173,5 +161,48 @@ func updatePostcard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("updated postcard id %s with text of len: %d", id, len(usertext))
+	log.Printf("somebody scanned postcard uuid %s", uuid)
+}
+
+func updatePostcard(w http.ResponseWriter, r *http.Request) {
+
+	uuid, err := uuidFromApiUrl(r)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	iskey := r.PostForm.Has("usertext")
+	if !iskey {
+		log.Println("in updatePostcard, key 'usertext' is missing in post form")
+		http.Error(w, "", http.StatusBadRequest)
+		return
+	}
+	usertext := r.PostForm.Get("usertext")
+
+	pc, err := getPostcardByUUID(uuid)
+	if err != nil {
+		log.Println("error in updatePostcard: ", err.Error())
+		http.Error(w, "could not safe the postcard", http.StatusInternalServerError)
+		return
+	}
+
+	pc.Textmessage = usertext
+
+	err = safePostcards()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "could not safe the postcard", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("updated postcard uuid %s with text of len: %d", uuid, len(usertext))
 }
