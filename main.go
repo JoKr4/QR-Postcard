@@ -156,6 +156,24 @@ func uuidFromApiUrl(r *http.Request) (string, error) {
 	return uuid, nil
 }
 
+func uuidFromApiUrlAltern(r *http.Request) (string, error) {
+
+	ref := r.Header.Get("Referer")
+	if ref == "" {
+		return "", fmt.Errorf("key 'Referer' not in request header")
+	}
+	parsed, _ := url.Parse(ref)
+	pathh := parsed.Path
+	splitted := strings.Split(pathh, "/")
+	if len(splitted) != 4 {
+		return "", fmt.Errorf("key 'Referer' has other than 4 path elements")
+	}
+
+	uuid := splitted[3]
+
+	return uuid, nil
+}
+
 func updatePostcard(w http.ResponseWriter, r *http.Request) {
 
 	uuid, err := uuidFromApiUrl(r)
