@@ -89,7 +89,9 @@ func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pcmu.Lock()
 	pc.Scanned = true
+	pcmu.Unlock()
 
 	err = safePostcards()
 	if err != nil {
@@ -205,7 +207,9 @@ func updatePostcard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pcmu.Lock()
 	pc.Textmessage = usertext
+	pcmu.Unlock()
 
 	err = safePostcards()
 	if err != nil {

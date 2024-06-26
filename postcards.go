@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 )
 
 type postcard struct {
@@ -20,6 +21,7 @@ type postcards struct {
 
 var postcardz postcards
 var postcardzFile string
+var pcmu sync.RWMutex
 
 func readPostcards() error {
 	data, err := os.ReadFile(postcardzFile)
@@ -36,6 +38,9 @@ func readPostcards() error {
 }
 
 func safePostcards() error {
+	pcmu.Lock()
+	defer pcmu.Unlock()
+
 	bytez, err := json.MarshalIndent(postcardz, "", "    ")
 	if err != nil {
 		return err
@@ -52,6 +57,8 @@ func (pc postcard) HasContent() bool {
 }
 
 func getPostcardByUUID(uuid string) (*postcard, error) {
+	pcmu.RLock()
+	defer pcmu.RUnlock()
 	for i, p := range postcardz.Postcards {
 		if p.UUID == uuid {
 			return &postcardz.Postcards[i], nil
