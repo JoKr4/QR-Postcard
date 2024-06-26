@@ -32,7 +32,6 @@ func main() {
 	r.HandleFunc("/", serveTemplateAdmin).Methods("GET")
 	r.PathPrefix("/static").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./resources"))))
 
-	r.HandleFunc("/api/postcard/loaded", loadedPostcard).Methods("GET")
 	r.HandleFunc("/api/postcard/update", updatePostcard).Methods("POST")
 	r.HandleFunc("/api/postcard/new", newPostcard).Methods("GET")
 	r.HandleFunc("/api/postcard/{postcarduuid}", serveTemplateCardForUser).Methods("GET")
@@ -78,11 +77,32 @@ func codeForExistingPostcard(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
-	_ = SiteLayout(false).Render(r.Context(), w)
+	vars := mux.Vars(r)
+	uuid := vars["postcarduuid"]
+
+	log.Printf("somebody scanned postcard uuid %s", uuid)
+
+	pc, err := getPostcardByUUID(uuid)
+	if err != nil {
+		log.Println("error in serveTemplateCardForUser: ", err.Error())
+		http.Error(w, "could not set scanned status on postcard", http.StatusInternalServerError)
+		return
+	}
+
+	pc.Scanned = true
+
+	err = safePostcards()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "could not safe the postcard", http.StatusInternalServerError)
+		return
+	}
+
+	_ = SiteLayout(pc).Render(r.Context(), w)
 }
 
 func serveTemplateAdmin(w http.ResponseWriter, r *http.Request) {
-	_ = SiteLayout(true).Render(r.Context(), w)
+	_ = SiteLayout(nil).Render(r.Context(), w)
 }
 
 type bufferQrWriter struct {
@@ -119,49 +139,21 @@ func uuidFromApiUrl(r *http.Request) (string, error) {
 
 	current, iskey := r.Header["Hx-Current-Url"]
 	if !iskey {
-		return "", fmt.Errorf("in updatePostcard, no such key in request 'Hx-Current-Url'")
+		return "", fmt.Errorf("no such key in request 'Hx-Current-Url'")
 	}
 	if len(current) != 1 {
-		return "", fmt.Errorf("in updatePostcard, key 'Hx-Current-Url' has more than one element")
+		return "", fmt.Errorf("key 'Hx-Current-Url' has more than one element")
 	}
 	parsed, _ := url.Parse(current[0])
 	pathh := parsed.Path
 	splitted := strings.Split(pathh, "/")
 	if len(splitted) != 4 {
-		return "", fmt.Errorf("in updatePostcard, key 'Hx-Current-Url' has other than 4 path elements")
+		return "", fmt.Errorf("key 'Hx-Current-Url' has other than 4 path elements")
 	}
 
 	uuid := splitted[3]
 
 	return uuid, nil
-}
-
-func loadedPostcard(w http.ResponseWriter, r *http.Request) {
-
-	uuid, err := uuidFromApiUrl(r)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	pc, err := getPostcardByUUID(uuid)
-	if err != nil {
-		log.Println("error in updatePostcard: ", err.Error())
-		http.Error(w, "could not set scanned status on postcard", http.StatusInternalServerError)
-		return
-	}
-
-	pc.Scanned = true
-
-	err = safePostcards()
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "could not safe the postcard", http.StatusInternalServerError)
-		return
-	}
-
-	log.Printf("somebody scanned postcard uuid %s", uuid)
 }
 
 func updatePostcard(w http.ResponseWriter, r *http.Request) {
@@ -205,4 +197,6 @@ func updatePostcard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("updated postcard uuid %s with text of len: %d", uuid, len(usertext))
+
+	_ = SendtextButton(pc.HasContent()).Render(r.Context(), w)
 }
