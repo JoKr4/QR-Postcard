@@ -7,6 +7,7 @@ let streaming = false;
 const width = 640; // TODO proportional to device real display width
 let height = 0; // This will be computed based on the input stream
 let front = false;
+let cachedPhoto = null;
 
 
 function startCamera() {
@@ -59,14 +60,17 @@ function takephoto() {
     canvasCaptureElement.height = height
     context.drawImage(videoElement, 0, 0, width, height);
   
-    // TODO cache until final save is pressed
     canvasCaptureElement.toBlob((blob) => {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open("POST", "/upload");
-        xmlHttp.setRequestHeader('Content-type', 'application/octet-stream');
-        xmlHttp.send(blob);
+        cachedPhoto = blob;
     });
-    //photo.setAttribute("src", data);
+
+}
+
+function uploadCachedPhoto() {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("POST", "/api/postcard/upload");
+    xmlHttp.setRequestHeader('Content-type', 'application/octet-stream');
+    xmlHttp.send(cachedPhoto);
 }
 
 // function togglecams() {
@@ -79,14 +83,4 @@ function takephoto() {
 //     };
 // }
 
-// function clearphoto() {
-//     const canvasElement = document.getElementById('canvas');
-//     const context = canvasElement.getContext("2d");
-//     context.fillStyle = "#AAA";
-//     context.fillRect(0, 0, canvasElement.width, canvasElement.height);
-  
-//     const data = canvasElement.toDataURL("image/png");
-//     photo.setAttribute("src", data);
-// }
-  
-  
+ 

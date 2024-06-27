@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -33,8 +34,7 @@ func main() {
 	r.HandleFunc("/", serveTemplateAdmin).Methods("GET")
 	r.PathPrefix("/static").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./resources"))))
 
-	r.HandleFunc("/upload", upload).Methods("POST")
-
+	r.HandleFunc("/api/postcard/upload", upload).Methods("POST")
 	r.HandleFunc("/api/postcard/update", updatePostcard).Methods("POST")
 	r.HandleFunc("/api/postcard/new", newPostcard).Methods("GET")
 	r.HandleFunc("/api/postcard/{postcarduuid}", serveTemplateCardForUser).Methods("GET")
@@ -65,7 +65,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("uploaded byte len %d for postcard uuid %s", len(b), uuid)
+	log.Printf("uploaded postcard photo byte len %d for uuid %s", len(b), uuid)
 
 	// _, _, err = image.Decode(r.Body)
 	// if err != nil {
@@ -74,8 +74,17 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	// TODO append uuid and running index
-	out, _ := os.Create("./upload/img.png")
+	path := "./upload/" + uuid
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		err = os.Mkdir(path, 0755)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "could not create folder for uploaded photo", http.StatusInternalServerError)
+			return
+		}
+	}
+	file := path + "/" + "photo.png"
+	out, _ := os.Create(file)
 	defer out.Close()
 	_, err = out.Write(b)
 	if err != nil {
@@ -118,7 +127,7 @@ func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	uuid := vars["postcarduuid"]
 
-	log.Printf("somebody scanned postcard uuid %s", uuid)
+	log.Printf("scanned postcard uuid %s", uuid)
 
 	pc, err := getPostcardByUUID(uuid)
 	if err != nil {
@@ -256,7 +265,7 @@ func updatePostcard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("updated postcard uuid %s with text of len: %d", uuid, len(usertext))
+	log.Printf("updated postcard with text of len %d for uuid %s", len(usertext), uuid)
 
 	_ = SendtextButton(pc.HasContent()).Render(r.Context(), w)
 }

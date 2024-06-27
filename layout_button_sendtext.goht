@@ -6,6 +6,7 @@
   hx-post: "/api/postcard/update",
   hx-swap: "outerHTML",
   hx-include: "#textarea1",
-  class: #{classes}
+  class: #{classes},
+  onClick: "uploadCachedPhoto()"
 } Save
 }
