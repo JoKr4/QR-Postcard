@@ -4,7 +4,7 @@ let videoElement = null;
 let canvasCaptureElement = null;
 let canvasSpacerElement = null;
 let streaming = false;
-const width = 640; // TODO proportional to device real display width
+const width = 240; // TODO proportional to device real display width
 let height = 0; // This will be computed based on the input stream
 let front = false;
 let cachedPhoto = null;
@@ -39,6 +39,7 @@ function startCamera() {
             videoElement.setAttribute("height", height);
             canvasCaptureElement.setAttribute("width", width);
             canvasCaptureElement.setAttribute("height", height);
+
             canvasSpacerElement.setAttribute("width", width);
             canvasSpacerElement.setAttribute("height", height);
             streaming = true;
