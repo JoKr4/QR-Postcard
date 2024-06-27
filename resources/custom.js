@@ -4,7 +4,7 @@ let videoElement = null;
 let canvasCaptureElement = null;
 let canvasSpacerElement = null;
 let streaming = false;
-const width = 640; // We will scale the photo width to this
+const width = 640; // TODO proportional to device real display width
 let height = 0; // This will be computed based on the input stream
 let front = false;
 
