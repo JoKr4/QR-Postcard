@@ -7,9 +7,10 @@ import (
 )
 
 type Config struct {
-	AddressListen string `json:"addressListen"`
-	AddressQr     string `json:"addressQr"`
-	Salvation     string `json:"salvation"`
+	AddressListen  string `json:"addressListen"`
+	AddressQr      string `json:"addressQr"`
+	Salvation      string `json:"salvation"`
+	PlaceholderImg string `json:"placeholderImg"`
 }
 
 var config Config

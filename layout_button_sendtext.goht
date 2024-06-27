@@ -1,5 +1,8 @@
-@goht SendtextButton(ok bool) {
+@goht SendtextButton(ok, camera bool) {
 - classes := map[string]bool{"btn btn-success": ok, "btn btn-primary": ok}
+- extra := map[string]string{}
+- if camera
+	- extra = map[string]string{"onClick": "uploadCachedPhoto()"}
 %button{
 	id: "sendtext",
 	style: "height: 60px;",
@@ -7,6 +10,6 @@
 	hx-swap: "outerHTML",
 	hx-include: "#textarea1",
 	class: #{classes},
-	onClick: "uploadCachedPhoto()"
-} Save
+	@attributes: #{extra}
+} Speichern und Hochladen
 }

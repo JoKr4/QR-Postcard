@@ -78,7 +78,7 @@ function restartCamera() {
 }
 
 function newphoto() {
-    videoElement.play();
+    //videoElement.play();
     const context = canvasCaptureElement.getContext('2d');
     context.clearRect(0, 0, width, height);
 }

@@ -1,0 +1,19 @@
+@goht UserContentWithPlaceholder(pc *postcard) {
+- placeholder := "/static/"+config.PlaceholderImg
+- onClickRedirect := "location.href = '/api/postcard/"+pc.UUID+"?feature=camera';"
+%img{src: #{placeholder}, class: "img-fluid rounded-start", alt: "..."}
+%div{class: "d-flex flex-column mt-2"}
+	%button{id: "ownPhoto", class: "btn btn-primary", style: "height: 60px;", onClick: #{onClickRedirect} } Eigenes Foto machen!
+	%h4{class: "mt-3"} #{config.Salvation}
+	%textarea{
+		class: "form-control",
+		rows: "4",
+		name: "usertext",
+		id: "textarea1",
+		"hx-on:keydown": "document.getElementById('sendtext').className = 'btn btn-primary'",
+		class: "mt-1"
+	}
+		=%s pc.Textmessage
+	%div{class: "row mt-2"}
+		= @render SendtextButton(pc.HasContent(), false)
+}

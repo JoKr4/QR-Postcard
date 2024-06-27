@@ -1,0 +1,16 @@
+@goht UserContent(salutation string, pc *postcard, customPhoto bool) {
+	%button{id: "takePhoto", class: "btn btn-primary", style: "height: 60px;", onClick: "takephoto()"} Foto aufnehmen
+	%button{id: "toggleCamera", class: "btn btn-primary", style: "height: 60px;", onClick: "togglecams()"} Kamera wechseln
+%h4{class: "mt-3"} #{salutation}
+%textarea{
+	class: "form-control",
+	rows: "4",
+	name: "usertext",
+	id: "textarea1",
+	"hx-on:keydown": "document.getElementById('sendtext').className = 'btn btn-primary'",
+	class: "mt-1"
+}
+	=%s pc.Textmessage
+%div{class: "row mt-2"}
+	= @render SendtextButton(pc.HasContent())
+}

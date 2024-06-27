@@ -1,14 +1,14 @@
-@goht UserContent(salutation string, pc *postcard) {
+@goht UserContentWithCamera(pc *postcard) {
 %div{class: "position-relative"}
 	%video{id: "camera-feed", class: "z-0 position-absolute", playsinline} camera not available
 	%canvas{id: "canvas-capture", class: "z-1 position-absolute"}
 %canvas{id: "canvas-spacer", class: "invisible"}
 %div{class: "d-flex flex-column"}
-	%div{class: "d-flex justify-content-evenly"}
+	%div{class: "d-flex justify-content-between"}
 		%button{id: "newPhoto", class: "btn btn-primary", style: "height: 60px;", onClick: "newphoto()"} Neues Foto
 		%button{id: "takePhoto", class: "btn btn-primary", style: "height: 60px;", onClick: "takephoto()"} Foto aufnehmen
 		%button{id: "toggleCamera", class: "btn btn-primary", style: "height: 60px;", onClick: "togglecams()"} Kamera wechseln
-	%h4{class: "mt-3"} #{salutation}
+	%h4{class: "mt-3"} #{config.Salvation}
 	%textarea{
 		class: "form-control",
 		rows: "4",
@@ -19,5 +19,5 @@
 	}
 		=%s pc.Textmessage
 	%div{class: "row mt-2"}
-		= @render SendtextButton(pc.HasContent())
+		= @render SendtextButton(pc.HasContent(), true)
 }

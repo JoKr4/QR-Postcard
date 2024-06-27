@@ -122,10 +122,21 @@ func codeForExistingPostcard(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
+
+	camera := false
+
+	queries := r.URL.Query()
+	feature := queries.Get("feature")
+	if feature == "camera" {
+		camera = true
+	}
+
 	vars := mux.Vars(r)
 	uuid := vars["postcarduuid"]
 
-	log.Printf("scanned postcard uuid %s", uuid)
+	if !camera {
+		log.Printf("scanned postcard uuid %s", uuid)
+	}
 
 	pc, err := getPostcardByUUID(uuid)
 	if err != nil {
@@ -145,11 +156,11 @@ func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = SiteLayout(pc).Render(r.Context(), w)
+	_ = SiteLayout(pc, camera).Render(r.Context(), w)
 }
 
 func serveTemplateAdmin(w http.ResponseWriter, r *http.Request) {
-	_ = SiteLayout(nil).Render(r.Context(), w)
+	_ = SiteLayout(nil, false).Render(r.Context(), w)
 }
 
 type bufferQrWriter struct {
@@ -223,6 +234,14 @@ func uuidFromApiUrlAltern(r *http.Request) (string, error) {
 
 func updatePostcard(w http.ResponseWriter, r *http.Request) {
 
+	camera := false
+
+	queries := r.URL.Query()
+	feature := queries.Get("feature")
+	if feature == "camera" {
+		camera = true
+	}
+
 	uuid, err := uuidFromApiUrl(r)
 	if err != nil {
 		log.Println(err)
@@ -265,5 +284,5 @@ func updatePostcard(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("updated postcard with text of len %d for uuid %s", len(usertext), uuid)
 
-	_ = SendtextButton(pc.HasContent()).Render(r.Context(), w)
+	_ = SendtextButton(pc.HasContent(), camera).Render(r.Context(), w)
 }
