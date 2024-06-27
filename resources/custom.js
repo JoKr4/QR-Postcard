@@ -6,6 +6,8 @@ let canvasSpacerElement = null;
 let streaming = false;
 const width = 640; // We will scale the photo width to this
 let height = 0; // This will be computed based on the input stream
+let front = false;
+
 
 function startCamera() {
     videoElement = document.getElementById('camera-feed');
@@ -46,12 +48,18 @@ function startCamera() {
       
 }
 
+function newphoto() {
+    const context = canvasCaptureElement.getContext('2d');
+    context.clearRect(0, 0, width, height);
+}
+
 function takephoto() {
     const context = canvasCaptureElement.getContext("2d");
     canvasCaptureElement.width = width
     canvasCaptureElement.height = height
     context.drawImage(videoElement, 0, 0, width, height);
   
+    // TODO cache until final save is pressed
     canvasCaptureElement.toBlob((blob) => {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open("POST", "/upload");
@@ -60,6 +68,16 @@ function takephoto() {
     });
     //photo.setAttribute("src", data);
 }
+
+// function togglecams() {
+//     document.getElementById("flip-button").onclick = () => {
+//         front = !front;
+//         // videoElement.stop();
+//     };
+//     const constraints = {
+//         video: { facingMode: front ? "user" : "environment" },
+//     };
+// }
 
 // function clearphoto() {
 //     const canvasElement = document.getElementById('canvas');

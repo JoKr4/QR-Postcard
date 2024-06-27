@@ -4,7 +4,10 @@
   %canvas{id: "canvas-capture", class: "z-1 position-absolute"}
 %div{class: "d-flex flex-column"}
   %canvas{id: "canvas-spacer", class: "invisible"}
-  %button{id: "takephoto", style: "height: 60px;", onClick: "takephoto()"} Take photo
+  %div{class: "d-flex justify-content-evenly"}
+    %button{id: "newPhoto", class: "btn btn-primary", style: "height: 60px;", onClick: "newphoto()"} Neues Foto
+    %button{id: "takePhoto", class: "btn btn-primary", style: "height: 60px;", onClick: "takephoto()"} --> Foto aufnehmen <--
+    %button{id: "toggleCamera", class: "btn btn-primary", style: "height: 60px;", onClick: "togglecams()"} Kamera wechseln
   %h4{class: "mt-3"} #{salutation}
   %textarea{
     class: "form-control",
