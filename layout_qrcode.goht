@@ -1,10 +1,10 @@
 @goht QrCodeOverlay(pngdata string) {
-	%div
-		%a{href: "/"}
-			- src := "data:image/png;base64,"+pngdata
-			%img{
-				src: #{src},
-				alt: "QR Code Error",
-				style: "width:100%"
-			}
+%div
+	%a{href: "/"}
+		- src := "data:image/png;base64,"+pngdata
+		%img{
+			src: #{src},
+			alt: "QR Code Error",
+			style: "width:100%"
+		}
 }
