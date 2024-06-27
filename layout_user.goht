@@ -1,6 +1,6 @@
 @goht UserContent(salutation string, pc *postcard) {
 %div{class: "position-relative"}
-	%video{id: "camera-feed", class: "z-0 position-absolute"} camera not available
+	%video{id: "camera-feed", class: "z-0 position-absolute", playsinline} camera not available
 	%canvas{id: "canvas-capture", class: "z-1 position-absolute"}
 %canvas{id: "canvas-spacer", class: "invisible"}
 %div{class: "d-flex flex-column"}
