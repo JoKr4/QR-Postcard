@@ -97,7 +97,7 @@ func codeForExistingPostcard(w http.ResponseWriter, r *http.Request) {
 	uuid := vars["postcarduuid"]
 	log.Println("codeForExistingPostcard with uuid:", uuid)
 
-	qrc, err := qrcode.New("http://192.168.178.36:8081/api/postcard/" + uuid)
+	qrc, err := qrcode.New("https://" + config.Address + "/api/postcard/" + uuid)
 	if err != nil {
 		what := fmt.Sprintf("could not generate QRCode: %v", err)
 		log.Println(what)

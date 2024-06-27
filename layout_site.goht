@@ -17,7 +17,7 @@
 			%div{class: "container mt-3"}
 				%div{class: "col"}
 					- if pc != nil
-						= @render UserContent("Hallo,", pc)
+						= @render UserContent(config.Salvation, pc)
 					- else
 						= @render AdminContent()
 }
