@@ -16,8 +16,8 @@
       %p Send your digital words on paper postcards with QR code!
     %div{class: "container mt-3"}
       %div{class: "col"}
-      - if pc != nil
-        = @render UserContent("Hallo,", pc)
-      - else
-        = @render AdminContent()
+        - if pc != nil
+          = @render UserContent("Hallo,", pc)
+        - else
+          = @render AdminContent()
 }

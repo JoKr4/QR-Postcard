@@ -1,4 +1,12 @@
 textarea { resize: none; }
-#canvas {
-    display: none;
+
+ /* https://stackoverflow.com/a/48606760 */
+.video-container {
+    /* position: absolute;
+    z-index: -1; */
+    top: 0;
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    object-fit: cover;
 }
