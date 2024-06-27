@@ -51,6 +51,7 @@ function startCamera() {
 }
 
 function newphoto() {
+    videoElement.play();
     const context = canvasCaptureElement.getContext('2d');
     context.clearRect(0, 0, width, height);
 }
@@ -65,6 +66,7 @@ function takephoto() {
         cachedPhoto = blob;
     });
 
+    videoElement.stop();
 }
 
 function uploadCachedPhoto() {
