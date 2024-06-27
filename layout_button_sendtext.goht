@@ -1,12 +1,12 @@
 @goht SendtextButton(ok bool) {
-- classes := map[string]bool{"btn btn-success": ok, "btn btn-primary": ok}
-%button{
-	id: "sendtext",
-	style: "height: 60px;",
-	hx-post: "/api/postcard/update",
-	hx-swap: "outerHTML",
-	hx-include: "#textarea1",
-	class: #{classes},
-	onClick: "uploadCachedPhoto()"
-} Save
+	- classes := map[string]bool{"btn btn-success": ok, "btn btn-primary": ok}
+	%button{
+		id: "sendtext",
+		style: "height: 60px;",
+		hx-post: "/api/postcard/update",
+		hx-swap: "outerHTML",
+		hx-include: "#textarea1",
+		class: #{classes},
+		onClick: "uploadCachedPhoto()"
+	} Save
 }

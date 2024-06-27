@@ -1,31 +1,31 @@
 
 @goht AdminContent() {
-%div{class: "container", style: "max-width: 540px;"}
-	%div{class: "row"}
-		%table{class: "table", id: "overlayable"}
-			%thead
-				%tr
-					%th{scope: "col"} Created
-					%th{scope: "col"} UUID
-					%th{scope: "col"} Scanned
-					%th{scope: "col"} HasContent
-					%th{scope: "col"} Actions
-			%tbody
-				%tr{id: "row-0"}
-					%td
-					%td
-					%td
-					%td
-					%td
-						%div{class: "d-flex justify-content-center"}
-							%button{
-								style: "w-100",
-								class: "btn btn-secondary",
-								hx-get: "/api/postcard/new",
-								hx-trigger: "click",
-								hx-target: "#row-0",
-								hx-swap: "afterend"
-							} New
-				- for _, r := range postcardz.Postcards
-					= @render TableRow(r)
+	%div{class: "container", style: "max-width: 540px;"}
+		%div{class: "row"}
+			%table{class: "table", id: "overlayable"}
+				%thead
+					%tr
+						%th{scope: "col"} Created
+						%th{scope: "col"} UUID
+						%th{scope: "col"} Scanned
+						%th{scope: "col"} HasContent
+						%th{scope: "col"} Actions
+				%tbody
+					%tr{id: "row-0"}
+						%td
+						%td
+						%td
+						%td
+						%td
+							%div{class: "d-flex justify-content-center"}
+								%button{
+									style: "w-100",
+									class: "btn btn-secondary",
+									hx-get: "/api/postcard/new",
+									hx-trigger: "click",
+									hx-target: "#row-0",
+									hx-swap: "afterend"
+								} New
+					- for _, r := range postcardz.Postcards
+						= @render TableRow(r)
 }
