@@ -7,14 +7,15 @@ import (
 )
 
 type Config struct {
-	Address   string
-	Salvation string
+	AddressListen string `json:"addressListen"`
+	AddressQr     string `json:"addressQr"`
+	Salvation     string `json:"salvation"`
 }
 
 var config Config
 
 func init() {
-	content, err := os.ReadFile("./config")
+	content, err := os.ReadFile("./config.json")
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
@@ -24,4 +25,7 @@ func init() {
 		log.Println(err)
 		os.Exit(1)
 	}
+	log.Println("using address listen", config.AddressListen)
+	log.Println("using address qr", config.AddressQr)
+	log.Printf("using salvation '%s'", config.Salvation)
 }
