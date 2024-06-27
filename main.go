@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -74,16 +73,15 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	path := "./upload/" + uuid
-	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-		err = os.Mkdir(path, 0755)
+	file := fmt.Sprintf("./upload/photo-%s.png", uuid)
+	if _, err := os.Stat(file); err == nil {
+		err = os.Remove(file)
 		if err != nil {
 			log.Println(err)
-			http.Error(w, "could not create folder for uploaded photo", http.StatusInternalServerError)
+			http.Error(w, "could not delete existing file for uploaded photo", http.StatusInternalServerError)
 			return
 		}
 	}
-	file := path + "/" + "photo.png"
 	out, _ := os.Create(file)
 	defer out.Close()
 	_, err = out.Write(b)
