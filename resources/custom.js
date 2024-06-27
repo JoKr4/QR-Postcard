@@ -6,7 +6,7 @@ let canvasSpacerElement = null;
 let streaming = false;
 const width = 240; // TODO proportional to device real display width
 let height = 0; // This will be computed based on the input stream
-let front = false;
+let front = true;
 let cachedPhoto = null;
 
 
@@ -15,7 +15,7 @@ function startCamera() {
     canvasCaptureElement = document.getElementById("canvas-capture");
     canvasSpacerElement = document.getElementById("canvas-spacer");
 
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: front ? "user" : "environment" } })
         .then(stream => {
                 videoElement.srcObject = stream;
                 videoElement.play();
@@ -50,6 +50,33 @@ function startCamera() {
       
 }
 
+function stopCamera() {
+    const stream = videoElement.srcObject;
+    const tracks = stream.getTracks();
+
+    tracks.forEach((track) => {
+        track.stop();
+    });
+
+    videoElement.srcObject = null;
+    streaming = false;
+}
+
+function restartCamera() {
+
+    stopCamera();
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: front ? "user" : "environment" } })
+        .then(stream => {
+                videoElement.srcObject = stream;
+                videoElement.play();
+            })
+        .catch(error => {
+            console.error('Error accessing camera:', error);
+        }
+    );
+}
+
 function newphoto() {
     videoElement.play();
     const context = canvasCaptureElement.getContext('2d');
@@ -65,8 +92,6 @@ function takephoto() {
     canvasCaptureElement.toBlob((blob) => {
         cachedPhoto = blob;
     });
-
-    videoElement.stop();
 }
 
 function uploadCachedPhoto() {
@@ -76,14 +101,8 @@ function uploadCachedPhoto() {
     xmlHttp.send(cachedPhoto);
 }
 
-// function togglecams() {
-//     document.getElementById("flip-button").onclick = () => {
-//         front = !front;
-//         // videoElement.stop();
-//     };
-//     const constraints = {
-//         video: { facingMode: front ? "user" : "environment" },
-//     };
-// }
-
+function togglecams() {
+    front = !front;
+    restartCamera();
+}
  
