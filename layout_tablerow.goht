@@ -1,7 +1,7 @@
 @goht TableRow(p postcard) {
 %tr
 	%td=p.Created
-	%td=p.UUID
+	%td=p.UUID[:8]
 	%td=%v p.Scanned
 	%td=%v p.HasContent()
 	%td
