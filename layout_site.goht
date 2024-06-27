@@ -1,7 +1,7 @@
 @goht SiteLayout(pc *postcard, camera bool) {
 !!! 5
 	%head
-		%title QR Postcard
+		%title QR Postkarte
 		%meta{name: "viewport", content: "width=device-width", initial-scale=1}
 		%script{src: "/static/htmx.min.js"}
 		%link{href: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css", rel: "stylesheet"}
@@ -12,8 +12,8 @@
 			%script window.addEventListener('load', startCamera);
 	%body
 		%div{class: "container-fluid p-0 bg-primary text-white text-center"}
-			%h1 QR Postcard
-			%p Send your digital words on paper postcards with QR code!
+			%h1 QR Postkarte
+			%p Lasse Deine digitale Grüße als QR Code auf einer Papierpostkarte verschicken!
 		%div{class: "container mt-3"}
 			%div{class: "col"}
 				- if pc != nil
