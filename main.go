@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -32,6 +33,8 @@ func main() {
 	r.HandleFunc("/", serveTemplateAdmin).Methods("GET")
 	r.PathPrefix("/static").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./resources"))))
 
+	r.HandleFunc("/upload", upload).Methods("POST")
+
 	r.HandleFunc("/api/postcard/update", updatePostcard).Methods("POST")
 	r.HandleFunc("/api/postcard/new", newPostcard).Methods("GET")
 	r.HandleFunc("/api/postcard/{postcarduuid}", serveTemplateCardForUser).Methods("GET")
@@ -45,6 +48,41 @@ func main() {
 	handler := c.Handler(r)
 
 	log.Fatal(http.ListenAndServe(":8081", handler))
+}
+
+func upload(w http.ResponseWriter, r *http.Request) {
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "could not read body data in photo upload", http.StatusInternalServerError)
+		return
+	}
+
+	uuid, err := uuidFromApiUrlAltern(r)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "could not get uuid from request header in photo upload", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("uploaded byte len %d for postcard uuid %s", len(b), uuid)
+
+	// _, _, err = image.Decode(r.Body)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	http.Error(w, "could not read decode photo data in upload", http.StatusInternalServerError)
+	// 	return
+	// }
+
+	// TODO append uuid and running index
+	out, _ := os.Create("./upload/img.png")
+	defer out.Close()
+	_, err = out.Write(b)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "could not save uploaded photo", http.StatusInternalServerError)
+		return
+	}
 }
 
 func codeForExistingPostcard(w http.ResponseWriter, r *http.Request) {

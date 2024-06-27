@@ -1,7 +1,11 @@
 @goht UserContent(salutation string, pc *postcard) {
 %div{class: "container", style: "max-width: 540px;"}
   %div{class: "row"}
-    %img{src: "/static/some.jpg", class: "img-fluid rounded-start", alt: "..."}
+    //%img{src: "/static/some.jpg", class: "img-fluid rounded-start", alt: "..."}
+    %video{id: "camera-feed"} camera not available
+  %div{class: "row"}
+    %canvas{id: "canvas"}
+    %button{id: "takephoto", style: "height: 60px;", onClick: "takephoto()"} Take photo
   %div{class: "row mt-3"}
     %h4 #{salutation}
   %div{class: "row"}

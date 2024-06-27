@@ -1,1 +1,4 @@
 textarea { resize: none; }
+#canvas {
+    display: none;
+}
