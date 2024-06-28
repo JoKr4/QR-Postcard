@@ -78,16 +78,23 @@ function restartCamera() {
 }
 
 function newphoto() {
+
+    resetSendtextButton()
+
     // reset canvas overlay of previously captured pixels
     const context = canvasCaptureElement.getContext('2d');
     context.clearRect(0, 0, width, height);
+}
 
-    // reset button status to unsafed
+function resetSendtextButton() {
     sendtextButton = document.getElementById("sendtext");
-    sendtextButton.className = "btn btn-primary"
+    sendtextButton.className = "btn mt-2 btn-secondary"
 }
 
 function takephoto() {
+
+    resetSendtextButton()
+    
     const context = canvasCaptureElement.getContext("2d");
     canvasCaptureElement.width = width
     canvasCaptureElement.height = height

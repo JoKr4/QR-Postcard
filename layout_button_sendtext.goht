@@ -1,5 +1,5 @@
 @goht SendtextButton(ok, camera bool) {
-- conditionalClasses := map[string]bool{"btn btn-success": ok == true, "btn btn-primary": ok == false}
+- conditionalClasses := map[string]bool{"btn mt-2 btn-success": ok == true, "btn mt-2 btn-secondary": ok == false}
 - onclick := ""
 - if camera
 	- onclick = "uploadCachedPhoto()"
