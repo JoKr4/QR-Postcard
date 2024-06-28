@@ -1,15 +1,15 @@
 @goht SendtextButton(ok, camera bool) {
-- classes := map[string]bool{"btn btn-success": ok, "btn btn-primary": ok}
-- extra := map[string]string{}
+- conditionalClasses := map[string]bool{"btn btn-success": ok == true, "btn btn-primary": ok == false}
+- onclick := ""
 - if camera
-	- extra = map[string]string{"onClick": "uploadCachedPhoto()"}
+	- onclick = "uploadCachedPhoto()"
 %button{
 	id: "sendtext",
 	style: "height: 60px;",
 	hx-post: "/api/postcard/update",
 	hx-swap: "outerHTML",
 	hx-include: "#textarea1",
-	class: #{classes},
-	@attributes: #{extra}
+	class: #{conditionalClasses},
+	onClick: #{onclick}
 } Speichern und Hochladen
 }
