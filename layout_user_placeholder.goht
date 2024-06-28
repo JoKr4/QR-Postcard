@@ -1,7 +1,6 @@
-@goht UserContentWithPlaceholder(pc *postcard) {
-- placeholder := "/static/"+config.PlaceholderImg
+@goht UserContentWithPlaceholder(pc *postcard, imgUrl string) {
 - onClickRedirect := "location.href = '/api/postcard/"+pc.UUID+"?feature=camera';"
-%img{src: #{placeholder}, class: "img-fluid rounded-start", alt: "..."}
+%img{src: #{imgUrl}, class: "img-fluid rounded-start", alt: "..."}
 %div{class: "d-flex flex-column mt-2"}
 	%button{id: "ownPhoto", class: "btn btn-primary", style: "height: 60px;", onClick: #{onClickRedirect} } Eigenes Foto machen!
 	= @render SendtextButton(pc.HasContent(), false)

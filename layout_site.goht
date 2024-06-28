@@ -1,4 +1,4 @@
-@goht SiteLayout(pc *postcard, camera bool) {
+@goht SiteLayout(pc *postcard, camera bool, imgUrl string) {
 !!! 5
 	%head
 		%title QR Postkarte
@@ -20,7 +20,7 @@
 					- if camera
 						= @render UserContentWithCamera(pc)
 					- else
-						= @render UserContentWithPlaceholder(pc)
+						= @render UserContentWithPlaceholder(pc, imgUrl)
 				- else
 					= @render AdminContent()
 }

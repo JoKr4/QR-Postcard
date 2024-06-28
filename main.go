@@ -32,6 +32,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", serveTemplateAdmin).Methods("GET")
 	r.PathPrefix("/static").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./resources"))))
+	r.PathPrefix("/upload").Handler(http.StripPrefix("/upload/", http.FileServer(http.Dir("./upload"))))
 
 	r.HandleFunc("/api/postcard/upload", upload).Methods("POST")
 	r.HandleFunc("/api/postcard/update", updatePostcard).Methods("POST")
@@ -163,14 +164,35 @@ func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
 		pcmu.RUnlock()
 	}
 
-	// TODO search for uploaded photo
-	// TODO if found, set camera to false, but placeholder to actual photo
+	// search for uploaded photo
+	photoTaken := ""
+	dirEntries, err := os.ReadDir("./upload")
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "could not open the upload folder", http.StatusInternalServerError)
+		return
+	}
+	for _, e := range dirEntries {
+		name := e.Name()
+		if strings.HasSuffix(name, ".png") &&
+			strings.HasPrefix(name, "photo-"+pc.UUID[:8]) {
+			photoTaken = name
+			break
+		}
+	}
+	// if found, set camera to false and actual photo instead placeholder
+	imgUrl := "/static/" + config.PlaceholderImg
+	if photoTaken != "" {
+		log.Println("will show existing photo")
+		camera = false
+		imgUrl = "/upload/" + photoTaken
+	}
 
-	_ = SiteLayout(pc, camera).Render(r.Context(), w)
+	_ = SiteLayout(pc, camera, imgUrl).Render(r.Context(), w)
 }
 
 func serveTemplateAdmin(w http.ResponseWriter, r *http.Request) {
-	_ = SiteLayout(nil, false).Render(r.Context(), w)
+	_ = SiteLayout(nil, false, "").Render(r.Context(), w)
 }
 
 type bufferQrWriter struct {
