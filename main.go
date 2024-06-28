@@ -152,15 +152,15 @@ func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
 		pcmu.Lock()
 		pc.Scanned = true
 		pcmu.Unlock()
+
+		err = safePostcards()
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "could not safe the postcard", http.StatusInternalServerError)
+			return
+		}
 	} else {
 		pcmu.RUnlock()
-	}
-
-	err = safePostcards()
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "could not safe the postcard", http.StatusInternalServerError)
-		return
 	}
 
 	// TODO search for uploaded photo
