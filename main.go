@@ -145,9 +145,16 @@ func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pcmu.Lock()
-	pc.Scanned = true
-	pcmu.Unlock()
+	pcmu.RLock()
+	if !pc.Scanned {
+		pcmu.RUnlock()
+
+		pcmu.Lock()
+		pc.Scanned = true
+		pcmu.Unlock()
+	} else {
+		pcmu.RUnlock()
+	}
 
 	err = safePostcards()
 	if err != nil {
@@ -155,6 +162,9 @@ func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "could not safe the postcard", http.StatusInternalServerError)
 		return
 	}
+
+	// TODO search for uploaded photo
+	// TODO if found, set camera to false, but placeholder to actual photo
 
 	_ = SiteLayout(pc, camera).Render(r.Context(), w)
 }
