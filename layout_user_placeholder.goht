@@ -1,8 +1,12 @@
+import "strings"
+
 @goht UserContentWithPlaceholder(pc *postcard, imgUrl string) {
 - onClickRedirect := "location.href = '/api/postcard/"+pc.UUID+"?feature=camera';"
+- disable := strings.HasPrefix(imgUrl, "/upload/photo-")
+- conditionalClasses := map[string]bool{"btn btn-primary": disable != true, "btn btn-primary disabled": disable == true}
 %img{src: #{imgUrl}, class: "img-fluid rounded-start", alt: "..."}
 %div{class: "d-flex flex-column mt-2"}
-	%button{id: "ownPhoto", class: "btn btn-primary", style: "height: 60px;", onClick: #{onClickRedirect} } Eigenes Foto machen!
+	%button{id: "ownPhoto", class: #{conditionalClasses}, style: "height: 60px;", onClick: #{onClickRedirect} } Eigenes Foto machen!
 	= @render SendtextButton(pc.HasContent(), false)
 	%h4{class: "mt-3"} #{config.Salvation}
 	%textarea{
