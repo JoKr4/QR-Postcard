@@ -135,7 +135,7 @@ func serveTemplateCardForUser(w http.ResponseWriter, r *http.Request) {
 	uuid := vars["postcarduuid"]
 
 	if !camera {
-		log.Printf("scanned postcard uuid %s", uuid)
+		log.Printf("user opened postcard uuid %s", uuid)
 	}
 
 	pc, err := getPostcardByUUID(uuid)
