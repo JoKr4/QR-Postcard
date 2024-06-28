@@ -78,9 +78,13 @@ function restartCamera() {
 }
 
 function newphoto() {
-    //videoElement.play();
+    // reset canvas overlay of previously captured pixels
     const context = canvasCaptureElement.getContext('2d');
     context.clearRect(0, 0, width, height);
+
+    // reset button status to unsafed
+    sendtextButton = document.getElementById("sendtext");
+    sendtextButton.className = "btn btn-primary"
 }
 
 function takephoto() {
